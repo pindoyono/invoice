@@ -21,8 +21,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('code');
-        });
+        if (Schema::hasColumn('products', 'code')) {
+            // Hapus index unik jika ada sebelum drop kolom
+            \DB::statement('DROP INDEX IF EXISTS products_code_unique');
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropColumn('code');
+            });
+        }
     }
 };
